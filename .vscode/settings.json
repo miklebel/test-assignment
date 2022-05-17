@@ -1,0 +1,14 @@
+{
+    "eslint.validate": ["typescript", "javascript"],
+    "eslint.format.enable": true,
+    "eslint.workingDirectories": ["./src"],
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.formatOnSave": true,
+    "typescript.preferences.importModuleSpecifier": "relative",
+    "html.format.enable": true,
+    "html.format.indentHandlebars": true,
+    "html.format.maxPreserveNewLines": 0
+  }
+  

@@ -1,0 +1,41 @@
+<canvas id="myChart" width="400" height="400"></canvas>
+<script>
+
+    ctx = document.getElementById('myChart').getContext('2d');
+    const rows = {{{ graphRows }}}
+
+    const chartsData = rows.reduce((prev, curr) => {
+        if (!prev[curr.site]) {
+            return { ...prev, [curr.site]: { labels: [curr.listing_month], data: [curr.avg_revenue] } }
+        } else {
+            prev[curr.site].labels.push(curr.listing_month)
+            prev[curr.site].data.push(curr.avg_revenue)
+            return prev
+        }
+    }, {})
+
+    const generateColor = () => {
+        const rgb = `${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}`
+        return { backgroundColor: `rgba(${rgb}, 0.2)`, borderColor: `rgb(${rgb})` }
+    }
+
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.values(chartsData)[0].labels,
+            datasets: Object.entries(chartsData).map(([site, { data, labels }]) => ({
+                data, borderWidth: 1,
+                label: site,
+                ...generateColor()
+            }))
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+
+    });
+</script>

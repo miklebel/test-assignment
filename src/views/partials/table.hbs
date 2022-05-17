@@ -1,0 +1,95 @@
+<table class='table'>
+  <tr>
+    <th class='id' column="1">
+      Listing ID
+      {{> orderArrow orderBy=orderBy desc=desc columnNumber='1'}}
+    </th>
+    <th class='month' column="2">
+      Listing month
+      {{> orderArrow orderBy=orderBy desc=desc columnNumber='2'}}
+    </th>
+    <th class='date' column="3">
+      Listing date
+      {{> orderArrow orderBy=orderBy desc=desc columnNumber='3'}}
+    </th>
+    <th class='broker' column="4">
+      Broker
+      {{> orderArrow orderBy=orderBy desc=desc columnNumber='4'}}
+    </th>
+    <th class='revenue' column="5">
+      Revenue
+      {{> orderArrow orderBy=orderBy desc=desc columnNumber='5'}}
+    </th>
+  </tr>
+  {{#each rows}}
+    {{> row}}
+  {{/each}}
+</table>
+<div class="d-flex">
+  <nav class="mx-auto" aria-label="Page navigation example">
+    <ul class="pagination" id='pagination'>
+    </ul>
+  </nav>
+  <p class="mx-auto">
+    Total:
+    {{count}}
+  </p>
+</div>
+<script>
+  const desc = getQueryVariable('desc') ?? 'false'
+  const orderBy = getQueryVariable('orderBy') ?? '1'
+  const page = +(getQueryVariable('page') ?? '1')
+  const count = {{ count }}
+
+  function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (decodeURIComponent(pair[0]) == variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+    return undefined;
+  }
+
+
+  Array.prototype.forEach.call(document.getElementsByTagName('th'), (th) => {
+    th.addEventListener('click', (event) => {
+      const column = event.target.getAttribute('column')
+
+      const domain = (new URL(document.location.href)).host
+      document.location.href = `http://${domain}/?page=1&orderBy=${column}&desc=${column === orderBy && desc === 'true' ? 'false' : 'true'}`
+    })
+  });
+
+  const list = []
+  const lastPage = Math.ceil(count / 20)
+  const lowPage = page - 4
+  const highPage = page + 4
+  for (let i = lowPage < 1 ? 1 : lowPage; i <= (highPage <= lastPage ? highPage : lastPage); i++) {
+    list.push(`<li class="page-item"><a class="page-link" page="${i}" href="javascript:;">${i}</a></li>`);
+  }
+  if (highPage < lastPage) list.push(`<li class="page-item"><a class="page-link fw-bold" page="${lastPage}" href="javascript:;">${lastPage}</a></li>`)
+  if (lowPage > 1) list.unshift(`<li class="page-item"><a class="page-link fw-bold" page="${1}" href="javascript:;">${1}</a></li>`)
+
+  document.querySelector('#pagination').insertAdjacentHTML('afterbegin', list.join(''))
+
+  Array.prototype.forEach.call(document.getElementsByClassName('page-link'), (th) => {
+    th.addEventListener('click', (event) => {
+      const page = event.target.getAttribute('page')
+
+      const domain = (new URL(document.location.href)).host
+      document.location.href = `http://${domain}/?page=${page}&orderBy=${orderBy}&desc=${desc}`
+    })
+  })
+
+
+
+
+</script>
+<style>
+  th {
+    cursor: pointer;
+  }
+</style>
